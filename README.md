@@ -23,7 +23,7 @@ The script will also auto grow, to ensure we stay profitable.
 
 
 
-
+hostnames.txt will allow you to add and remove hosts/servernames manually. All functions read this file explicitly.
 
 
 
