@@ -6,5 +6,5 @@ export async function rootscript(ns, hostname) {
   await ns.httpworm(hostname);
   await ns.ftpcrack(hostname);
   await ns.nuke(hostname);
-    ns.print(`<span style="color: green">We have obtain root on ${hostname}`);
+    ns.print(`We have obtained root on ${hostname}`);
 }
