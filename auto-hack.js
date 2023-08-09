@@ -1,4 +1,15 @@
 export async function hackscript(ns, hostname) {
+
+  const purchased = ns.getPurchasedServers();
+  ns.write("purchasedservers.txt", purchased.join('\n'));
+  const blacklist = ["home", ...purchased]; // Add "home" and purchased servers to blacklist
+
+  // Check if the hostname is in the blacklist
+  if (blacklist.includes(hostname)) {
+    ns.print(`Skipping blacklisted server: ${hostname}`);
+    return;
+  }
+
   const moneyBeforeHack = ns.getServerMoneyAvailable(hostname);
   ns.write("moneybefore.txt", moneyBeforeHack.toString());
   await ns.hack(hostname);
@@ -7,11 +18,12 @@ export async function hackscript(ns, hostname) {
 
   const before = parseFloat(ns.read("moneybefore.txt"));
   const after = parseFloat(ns.read("moneyafter.txt"));
-  const hackSuccess = after > before;
+  const hackSuccess = after < before;
   if (hackSuccess) {
-    ns.print(`We have gained money from ${hostname}`);
-  } else {
-    ns.print('Incase of draining the targets money, we will now grow and move on')
+    ns.print(`!We have gained money from: ${hostname}! Growing target`);
     await ns.grow(hostname);
+  } else {
+    ns.print('!We did not hack, we gained no money. Weaken target!');
+    await ns.weaken(hostname);
   }
 }
