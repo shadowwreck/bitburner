@@ -1,4 +1,6 @@
 export async function hackscript(ns, hostname) {
+const moneybeforehackfile = "moneybefore.txt"
+const moneyafterhackfile = "moneyafter.txt"
 
   const purchased = ns.getPurchasedServers();
   ns.write("purchasedservers.txt", purchased.join('\n'));
@@ -11,13 +13,13 @@ export async function hackscript(ns, hostname) {
   }
 
   const moneyBeforeHack = ns.getServerMoneyAvailable(hostname);
-  ns.write("moneybefore.txt", moneyBeforeHack.toString());
+  ns.write(moneybeforehackfile, moneyBeforeHack.toString());
   await ns.hack(hostname);
   const moneyAfterHack = ns.getServerMoneyAvailable(hostname);
-  ns.write("moneyafter.txt", moneyAfterHack.toString());
+  ns.write(moneyafterhackfile, moneyAfterHack.toString());
 
-  const before = parseFloat(ns.read("moneybefore.txt"));
-  const after = parseFloat(ns.read("moneyafter.txt"));
+  const before = parseFloat(ns.read(moneybeforehackfile));
+  const after = parseFloat(ns.read(moneyafterhackfile));
   const hackSuccess = after < before;
   if (hackSuccess) {
     ns.print(`!We have gained money from: ${hostname}! Growing target`);
