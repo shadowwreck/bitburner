@@ -7,14 +7,13 @@ I have made this as easy as I possibly can, and to understand for new comers.
 
 Secondly.   I will assume you know enough about javascript that you can sift through the files to adjust parameters accordingly.
 
-
+hostnames.txt Is a file that you can add, remove or modify to your own needs.  The scripts read from this file, explicitly. 
 
 ## What this does.
 
 
 
 
-hostnames.txt will allow you to add and remove hosts/servernames manually. All functions read this file explicitly.
 
 
 ### What does **auto-hack.js** do you ask. Well
