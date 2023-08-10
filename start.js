@@ -12,8 +12,10 @@ export async function main(ns) {
   for (const hostname of hostnames) {
     const myhacklvl = ns.getHackingLevel();
     const targetHackingLevel = ns.getServerRequiredHackingLevel(hostname);
-    const isStartScriptRunning = ns.scriptRunning(mainscript, hostname);
-    const isStartScriptFileExists = ns.fileExists(mainscript, hostname);
+
+    const serverSecurityLevel = ns.getServerSecurityLevel(hostname);
+    const minSecurityLevel = ns.getServerMinSecurityLevel(hostname);
+
 
     if (!ns.hasRootAccess(hostname)) {
       await rootscript(ns, hostname);
@@ -21,8 +23,10 @@ export async function main(ns) {
       const availableram = ns.getServerMaxRam(hostname);
       if (availableram >= ramneeded) {
         await copy(ns, hostname);
-        if (myhacklvl >= targetHackingLevel) {
-          await hackscript(ns, hostname);
+        if (serverSecurityLevel > minSecurityLevel) { // Check if the server's security level is higher than the min
+          if (myhacklvl >= targetHackingLevel) {
+            await hackscript(ns, hostname);
+          }
         }
       }
     }
