@@ -2,28 +2,54 @@
 
 This script takes into account that you have made some money, and have all the tools to open ports already.
 
-There is a couple of things to be modified by the end user. 
-Firstly.   The hostnames.txt file is a file you can add and remove hosts manually. This file is read from all functions. 
+There is a couple of things to be modified by the end user in the scripts. 
+I have made this as easy as I possibly can, and to understand for new comers. 
 
 Secondly.   I will assume you know enough about javascript that you can sift through the files to adjust parameters accordingly.
 
 
 
-What this does.
-We run start.js which will run some functions, and will call on the appropriate scripts depending on the condition that is met or unmet. 
+## What this does.
 
-It will iterate through the list of hostnames.txt in order to find any that does not have root. 
-If that target does not have root, and we are able to hack it.  It will auto open the ports, and nuke it. 
-
-Once we have root, it will move on to hacking the targets that have root access. 
-Upon doing so, It will copy the scripts to those targets and run the files if the host ram allows it. 
-
-
-The script will also auto grow, to ensure we stay profitable. 
 
 
 
 hostnames.txt will allow you to add and remove hosts/servernames manually. All functions read this file explicitly.
+
+
+### What does **auto-hack.js** do you ask. Well
+
+It will firstly, (after adding any additional server to the blacklist which it will skip over. 
+It will check the targets current money
+Hack them
+Recheck their money and see if their was a gain, or nothing.
+If nothing, we will grow
+It it failed, we will weaken
+
+
+### What does **copy.js** do?
+It will first, the scripts do not exist, which we can define by    **if (existingFilesCount === 5) {**   5 = The amount of files you are copying. This will ENSURE all files are copied
+
+Then it will check to see, if the start.js running, and does the files exist on the target.   
+It will calculate the max threads the target can use for the script, and exec start.js with those max threads(Which so far, is their literal max)
+
+If the scripts do not exist, or is not running, it will copy them, and exec the,
+
+
+### What and how does *start.js* work?
+
+This is where it get interesting. 
+We have created a file for hostnames, which is read from by every script(Which is modifiable)
+If we dont have root on the target, we will run rootscript to open ports, and gain root. 
+It will then see if the target has enough ram to run the script, if it does, it will call on copy.js
+
+The next part is, if we have hacked the target recently, go to the next host, if we have not hacked the target recently, hack them. 
+
+Upon failing a hack, we will weaken, if we had success, or gained money, we will grow(This helps us stay profitable)
+
+
+
+
 
 
 
