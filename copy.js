@@ -1,44 +1,38 @@
 /** @param {NS} ns */
-export async function copy(ns, hostname) {
-  const filesToCopy = ["cryptnet/root.js", "cryptnet/auto-hack.js", "cryptnet/start.js", "cryptnet/copy.js", "hostnames.txt"];
-  const mainscript = "cryptnet/start.js";
+import { config } from "cryptnet/config.js";
+import { hostnames } from "cryptnet/functions.js";
+//let log = config.log
+//const logging = ns.write(log)
 
-//    const isStartScriptRunning = ns.scriptRunning(mainscript, hostname);
-//    const isStartScriptFileExists = ns.fileExists(mainscript, hostname);
+export async function copy(ns) {
+const hostnamesArray = hostnames(ns, config);
 
+    for (const hostname of hostnamesArray) {
+        const filesExist = await checkFilesExist(ns, config.filesToCopy, hostname);
+        const ramNeeded = ns.getScriptRam(config.mainscript); // This is the script ram
+        const availableRam = ns.getServerMaxRam(hostname);
+        const maxThreads = Math.floor(availableRam / ramNeeded);
 
-  let scriptExists = false;
-  let existingFilesCount = 0;
+        if (maxThreads >= 1) {
+            if (!filesExist) {
+                ns.print(`Copying files to ${hostname}`);
+                await ns.scp(config.filesToCopy, hostname, "home");
+            } else {
+                ns.print(`Script is not running on ${hostname}. Executing with max threads (${maxThreads})`);
+                await ns.exec(config.mainscript, hostname, maxThreads);
 
-  // Check if each file exists and copy it individually
-  for (const file of filesToCopy) {
-    const fileExists = await ns.fileExists(file);
-    if (fileExists) {
-      existingFilesCount++;
-       ns.scp(file, hostname, "home"); // Copy each file individually
-      if (existingFilesCount === 5) {
-        scriptExists = true;
-        break;
-      }
+            }
+        }
+    }
+}
+
+async function checkFilesExist(ns,  hostname) {
+    const filenames = config.filesToCopy
+  for (const files of filenames) {
+    if (!(await ns.fileExists(files))) {
+        ns.tprint(`File ${files} not found on ${hostname}`);
+        return false;
     }
   }
-
-  if (!ns.scriptRunning(mainscript, hostname)) {
-    if (scriptExists) {
-      const ramNeeded = ns.getScriptRam(mainscript);
-      const availableRam = ns.getServerMaxRam(hostname);
-      const maxThreads = Math.floor(availableRam / ramNeeded);
-
-      if (maxThreads >= 1) {
-        ns.print(`Script is not running on ${hostname}. Executing with max threads (${maxThreads})`);
-        ns.exec(mainscript, hostname, maxThreads);
-      }
-    }
-  }
-
-  if (!scriptExists) {
-    ns.print("Let us ensure the scripts are copied");
-    ns.scp(filesToCopy, hostname);
-    ns.print("Scripts copied.");
-  }
+    return true;
 }
